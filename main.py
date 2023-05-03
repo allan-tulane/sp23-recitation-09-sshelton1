@@ -13,7 +13,25 @@ def shortest_shortest_path(graph, source):
       (shortest path weight, shortest path number of edges). See test case for example.
     """
     ### TODO
-    pass
+    def ssp_helper(visited, frontier):
+        if len(frontier) == 0:
+          return visited
+        else:
+          stats, node = heappop(frontier)
+          distance, edges = stats
+          if node in visited:
+            return ssp_helper(visited, frontier)
+          else:
+            visited[node] = (distance, edges)
+            for neighbor, weight in graph[node]:
+              heappush(frontier, ((distance + weight, edges + 1), neighbor))                
+            return ssp_helper(visited, frontier)
+        
+    frontier = []
+    heappush(frontier, ((0, 0), source))
+    visited = dict()
+    return ssp_helper(visited, frontier)
+    
     
 def test_shortest_shortest_path():
 
@@ -41,7 +59,20 @@ def bfs_path(graph, source):
       that vertex in the shortest path tree.
     """
     ###TODO
-    pass
+    parents = dict()
+    visited = set()
+    frontier = set([source])
+
+    while len(frontier) != 0:
+        parent = frontier.pop()
+        neighbors = graph[parent]
+        for v in neighbors:
+          if v not in parents.keys():
+            parents[v] = parent
+          frontier.update(graph[v])
+          frontier.difference_update(visited)
+        visited.add(parent)
+    return parents
 
 def get_sample_graph():
      return {'s': {'a', 'b'},
@@ -66,7 +97,15 @@ def get_path(parents, destination):
       (excluding the destination node itself). See test_get_path for an example.
     """
     ###TODO
-    pass
+    path = deque()
+    current = destination
+    while current != parents[current]:
+        current = parents[current]
+        path.appendleft(current)
+    path_str = ""
+    for i in path:
+        path_str += i
+    return path_str
 
 def test_get_path():
     graph = get_sample_graph()
